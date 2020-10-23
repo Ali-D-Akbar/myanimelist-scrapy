@@ -3,16 +3,18 @@ import json
 from tabulate import tabulate
 
 class TopAnimeSpider(scrapy.Spider):
-    name = "top_anime"
+    name = "top_50_anime"
 
     start_urls = [
         'https://myanimelist.net/topanime.php'
     ]
 
     def parse(self, response):
-        anime_dict = response.css("table.top-ranking-table tr.ranking-list div.clearfix a.hoverinfo_trigger::text") \
+        # anime_dict = response.css("table.top-ranking-table tr.ranking-list div.clearfix a.hoverinfo_trigger::text") \
+        #     .getall()
+        anime_dict = response.css("table.top-ranking-table tr.ranking-list div.detail h3.hoverinfo_trigger a::text") \
             .getall()
-        filename = 'Top50Anime.html'
+        filename = 'Top50Anime.txt'
         with open(filename, 'w') as f:
             for index, key in enumerate(anime_dict):
                 print('{}. {}\n'.format(index + 1, key))
@@ -36,7 +38,7 @@ class CompletedAnimeSpider(scrapy.Spider):
         anime_ratings = [d['score'] for d in anime_dict_list]
         anime_stats = [list(a) for a in zip(anime_titles, anime_ratings)]
         print (anime_stats)
-        filename = 'CompletedAnimeList.html'
+        filename = 'CompletedAnimeList.txt'
         with open(filename, 'w') as f:
             print(tabulate(anime_stats, headers=['Anime Name', 'Rating'], showindex=True, tablefmt='fancy_grid'))
             f.write(tabulate(anime_stats, headers=['Anime Name', 'Rating'], showindex=True, tablefmt='fancy_grid'))
